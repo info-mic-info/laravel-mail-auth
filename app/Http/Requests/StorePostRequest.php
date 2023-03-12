@@ -22,12 +22,14 @@ class StorePostRequest extends FormRequest
      * @return array<string, mixed>
      */
     public function rules()
-    {
+    { 
         return [
             'title' => ['required', 'unique:posts', 'max:150'],
             'content' => ['nullable'],
             'author' => ['nullable'],
             'type_id' => ['nullable', 'exists:types,id'],
+            'tags' => ['exists:tags, id'],
+            'cover_images' => ['nullable', 'image', 'max:250']
         ];
     }
 
@@ -39,9 +41,12 @@ class StorePostRequest extends FormRequest
 public function messages()
 {
     return [
-        'title.required' => 'Il titolo è richiesto',
-        'title.unique' => 'é presente un post con questo titolo',
-        'title.max' =>  'Il post non può essere lungo più di :max caratteri'
+        'title.required'    => 'Il titolo è richiesto',
+        'title.unique'      => 'é presente un post con questo titolo',
+        'title.max'         =>  'Il post non può essere lungo più di :max caratteri',
+        'tags.exists'       => 'Il tag selezionato non è più valido',
+        'cover_image.image' => 'Inserire un formato di immagine valido',
+        'cover_image.max'   => 'Path immagine non valido',
     ];
 }
 }

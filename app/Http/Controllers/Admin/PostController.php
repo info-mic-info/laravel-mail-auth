@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Support\Facades\Auth;
+
+use Illuminate\Support\Facades\Storage;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
@@ -57,12 +60,21 @@ class PostController extends Controller
 
         $newPost = new Post();
 
+        if($request->has('cover_image')){
+            $path= Storage::disk('public')->put('post_images', $request->cover_image);
+
+            $form_data['cover_image'] = $path;
+        }
+
         $newPost->fill($form_data);
         $newPost->save();
 
         if($request->has('tag')){
             $newPost->tags()->attach($request->tags);
         }
+
+    
+
 
         return redirect()->route('admin.posts.index')->with('message', 'Post creato correttamente');
     }
@@ -112,6 +124,18 @@ class PostController extends Controller
         $form_data['slug'] = $slug;
 
         $form_data['excerpt'] = $excerpt;
+
+
+        if($request->has('cover_image')){
+
+            if($post->cover_image){
+                Storage::delete($post->cover_image);
+            }
+
+            $path= Storage::disk('public')->put('post_images', $request->cover_image);
+
+            $form_data['cover_image'] = $path;
+        }
 
 
         $post->update($form_data);
